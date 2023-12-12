@@ -2,6 +2,7 @@ import dotenv from 'dotenv'
 import express from 'express'
 import mongoose from 'mongoose'
 import { router } from './routes'
+import { errorMiddleware } from './errors/errorMiddleware'
 
 dotenv.config()
 const PORT = process.env.PORT
@@ -11,6 +12,7 @@ const app = express()
 
 app.use(express.json())
 app.use(router)
+app.use(errorMiddleware)
 
 mongoose.connect(DATABASE_URL as string).then(() => {
   console.log('Connection to MongoDB successfully established!')
@@ -24,6 +26,6 @@ mongoose.connect(DATABASE_URL as string).then(() => {
     },
   )
 })
-app.listen(process.env.PORT || 5555, () =>
-  console.log('server listening on port 5555'),
+app.listen(process.env.PORT || 5000, () =>
+  console.log(`server listening on port ${PORT}`),
 )
