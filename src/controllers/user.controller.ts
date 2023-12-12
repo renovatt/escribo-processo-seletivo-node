@@ -1,12 +1,47 @@
 /* eslint-disable camelcase */
 import { Prisma } from '@prisma/client'
 import prismaClient from '../lib/prisma'
-import { UserProps } from '../@types'
-import { hash } from 'bcryptjs'
+import { UserProps, UserWithToken } from '../@types'
+import { compare, hash } from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { Request, Response } from 'express'
 
 export class UserController {
+  async signin(request: Request, response: Response) {
+    const { email, password }: UserProps = request.body
+
+    const user = await prismaClient.user.findUnique({
+      where: { email },
+    })
+
+    if (!user) {
+      return response
+        .status(400)
+        .json({ error: 'Usuário e/ou senha inválidos&quot' })
+    }
+
+    const passwordMatcher = await compare(password, user.password)
+
+    if (!passwordMatcher) {
+      return response
+        .status(400)
+        .json({ error: 'Usuário e/ou senha inválidos&quot' })
+    }
+
+    const userController = new UserController()
+    const accessToken = userController.generateAccessToken(user.id)
+
+    const authenticatedUser: UserWithToken = {
+      id: user.id,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      last_login: user.last_login,
+      token: accessToken,
+    }
+
+    return response.status(200).json(authenticatedUser)
+  }
+
   async signUp(request: Request, response: Response) {
     const { name, email, password, cellphones }: UserProps = request.body
 
@@ -43,13 +78,6 @@ export class UserController {
 
       const userController = new UserController()
       const accessToken = userController.generateAccessToken(newUSer.id)
-
-      type UserWithToken = Omit<
-        Prisma.UserCreateInput,
-        'password' | 'email' | 'name' | 'cellphones'
-      > & {
-        token: string
-      }
 
       const user: UserWithToken = {
         id: newUSer.id,
