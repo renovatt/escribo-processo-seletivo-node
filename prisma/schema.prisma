@@ -7,8 +7,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+type Cellphone {
+  ddd    String
+  number String
+}
+
 model User {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  email String @unique
-  name  String
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  email      String      @unique
+  password   String
+  cellphones Cellphone[]
+
+  created_at DateTime
+  updated_at DateTime
+  last_login DateTime
+
+  @@map("user")
 }
