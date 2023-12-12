@@ -19,8 +19,8 @@ model User {
   password   String
   cellphones Cellphone[]
 
-  created_at DateTime
-  updated_at DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
   last_login DateTime
 
   @@map("user")

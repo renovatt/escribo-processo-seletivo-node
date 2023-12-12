@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 import express from 'express'
 import mongoose from 'mongoose'
-// import { router } from './router'
+import { router } from './routes'
 
 dotenv.config()
 const PORT = process.env.PORT
@@ -10,7 +10,7 @@ const DATABASE_URL = process.env.DATABASE_URL
 const app = express()
 
 app.use(express.json())
-// app.use(router)
+app.use(router)
 
 mongoose.connect(DATABASE_URL as string).then(() => {
   console.log('Connection to MongoDB successfully established!')
