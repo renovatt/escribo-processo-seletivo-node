@@ -23,4 +23,13 @@ export class UserController {
       next(error)
     }
   }
+
+  me = async (request: Request, response: Response, next: NextFunction) => {
+    try {
+      const { id } = request.params
+      await this.userService.me(id, response)
+    } catch (error) {
+      next(error)
+    }
+  }
 }

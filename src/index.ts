@@ -5,8 +5,9 @@ import { router } from './routes'
 import { errorMiddleware } from './errors/errorMiddleware'
 
 dotenv.config()
-const PORT = process.env.PORT
-const DATABASE_URL = process.env.DATABASE_URL
+
+const PORT = process.env.PORT ?? ''
+const DATABASE_URL = process.env.DATABASE_URL ?? ''
 
 const app = express()
 
@@ -14,7 +15,7 @@ app.use(express.json())
 app.use(router)
 app.use(errorMiddleware)
 
-mongoose.connect(DATABASE_URL as string).then(() => {
+mongoose.connect(DATABASE_URL).then(() => {
   console.log('Connection to MongoDB successfully established!')
   app.listen(
     {
@@ -26,6 +27,3 @@ mongoose.connect(DATABASE_URL as string).then(() => {
     },
   )
 })
-app.listen(process.env.PORT || 5000, () =>
-  console.log(`server listening on port ${PORT}`),
-)

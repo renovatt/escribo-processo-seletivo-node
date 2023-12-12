@@ -22,3 +22,9 @@ export type UserWithToken = Omit<
 > & {
   token: string
 }
+
+export interface TokenPayload {
+  userId: string
+}
+
+export type AuthenticatedUser = TokenPayload & Partial<UserProps>

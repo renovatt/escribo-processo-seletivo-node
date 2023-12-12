@@ -43,12 +43,14 @@ export class UserService {
       return response.status(200).json(authenticatedUser)
     } catch (error) {
       if (error instanceof ApiError) {
-        return response.status(error.statusCode).json({ error: error.message })
+        return response
+          .status(error.statusCode)
+          .json({ mensagem: error.message })
       } else {
         const internalError = new InternalError('Erro interno.')
         return response
           .status(internalError.statusCode)
-          .json({ error: internalError.message })
+          .json({ mensagem: internalError.message })
       }
     }
   }
@@ -106,12 +108,49 @@ export class UserService {
       return response.status(201).json(user)
     } catch (error) {
       if (error instanceof ApiError) {
-        return response.status(error.statusCode).json({ error: error.message })
+        return response
+          .status(error.statusCode)
+          .json({ mensagem: error.message })
       } else {
         const internalError = new InternalError('Erro interno.')
         return response
           .status(internalError.statusCode)
-          .json({ error: internalError.message })
+          .json({ mensagem: internalError.message })
+      }
+    }
+  }
+
+  async me(id: string, response: Response) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { id },
+      })
+
+      if (!user) {
+        throw new BadRequesError('Usuário não encontrado')
+      }
+
+      const authenticatedUser: Omit<UserProps, 'password'> = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        cellphones: user.cellphones,
+        created_at: user.created_at,
+        updated_at: user.updated_at,
+        last_login: user.last_login,
+      }
+
+      return response.status(200).json(authenticatedUser)
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return response
+          .status(error.statusCode)
+          .json({ mensagem: error.message })
+      } else {
+        const internalError = new InternalError('Erro interno.')
+        return response
+          .status(internalError.statusCode)
+          .json({ mensagem: internalError.message })
       }
     }
   }

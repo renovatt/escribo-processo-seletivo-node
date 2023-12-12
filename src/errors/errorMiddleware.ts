@@ -8,11 +8,11 @@ export function errorMiddleware(
   next: NextFunction,
 ) {
   if (error instanceof ApiError) {
-    return res.status(error.statusCode).json({ error: error.message })
+    return res.status(error.statusCode).json({ mensagem: error.message })
   }
 
   const internalError = new InternalError('Erro interno.')
   return res
     .status(internalError.statusCode)
-    .json({ error: internalError.message })
+    .json({ mensagem: internalError.message })
 }
