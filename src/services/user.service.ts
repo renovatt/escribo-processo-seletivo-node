@@ -3,19 +3,28 @@ import { Response } from 'express'
 import { compare, hash } from 'bcryptjs'
 import prismaClient from '../lib/prisma'
 import { PrismaClient } from '@prisma/client'
-import { UserProps, UserWithToken } from '../@types'
-import { ApiError, BadRequesError, InternalError } from '../errors'
+import { UserWithToken } from '../@types'
+import { handleError } from '../errors/zod.validation'
+import { BadRequesError } from '../errors'
+import {
+  UserSchemaProps,
+  loginSchema,
+  loginSchemaProps,
+  userSchema,
+} from '../zod'
 
 export class UserService {
   private prisma: PrismaClient
 
   constructor() {
-    this.prisma = new PrismaClient()
+    this.prisma = prismaClient
   }
 
-  async signIn(body: UserProps, response: Response) {
+  async signIn(body: loginSchemaProps, response: Response) {
     try {
-      const { email, password } = body
+      const validatedData = loginSchema.parse(body)
+      const { email, password } = validatedData
+
       const user = await this.prisma.user.findUnique({
         where: { email },
       })
@@ -42,22 +51,14 @@ export class UserService {
 
       return response.status(200).json(authenticatedUser)
     } catch (error) {
-      if (error instanceof ApiError) {
-        return response
-          .status(error.statusCode)
-          .json({ mensagem: error.message })
-      } else {
-        const internalError = new InternalError('Erro interno.')
-        return response
-          .status(internalError.statusCode)
-          .json({ mensagem: internalError.message })
-      }
+      handleError(error, response)
     }
   }
 
-  async signUp(body: UserProps, response: Response) {
+  async signUp(body: UserSchemaProps, response: Response) {
     try {
-      const { name, email, password, cellphones } = body
+      const validatedData = userSchema.parse(body)
+      const { name, email, password, cellphones } = validatedData
 
       if (!name || !email || !password) {
         throw new BadRequesError('Campos obrigatórios não fornecidos.')
@@ -107,16 +108,7 @@ export class UserService {
 
       return response.status(201).json(user)
     } catch (error) {
-      if (error instanceof ApiError) {
-        return response
-          .status(error.statusCode)
-          .json({ mensagem: error.message })
-      } else {
-        const internalError = new InternalError('Erro interno.')
-        return response
-          .status(internalError.statusCode)
-          .json({ mensagem: internalError.message })
-      }
+      handleError(error, response)
     }
   }
 
@@ -130,7 +122,7 @@ export class UserService {
         throw new BadRequesError('Usuário não encontrado')
       }
 
-      const authenticatedUser: Omit<UserProps, 'password'> = {
+      const authenticatedUser: Omit<UserSchemaProps, 'password'> = {
         id: user.id,
         name: user.name,
         email: user.email,
@@ -142,16 +134,7 @@ export class UserService {
 
       return response.status(200).json(authenticatedUser)
     } catch (error) {
-      if (error instanceof ApiError) {
-        return response
-          .status(error.statusCode)
-          .json({ mensagem: error.message })
-      } else {
-        const internalError = new InternalError('Erro interno.')
-        return response
-          .status(internalError.statusCode)
-          .json({ mensagem: internalError.message })
-      }
+      handleError(error, response)
     }
   }
 

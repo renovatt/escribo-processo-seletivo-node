@@ -1,20 +1,5 @@
 import { Prisma } from '@prisma/client'
-
-type Cellphone = {
-  ddd: string
-  number: string
-}
-
-export interface UserProps {
-  id: string
-  name: string
-  email: string
-  password: string
-  cellphones: Cellphone[]
-  created_at: Date
-  updated_at: Date
-  last_login: Date
-}
+import { UserSchemaProps } from '../zod'
 
 export type UserWithToken = Omit<
   Prisma.UserCreateInput,
@@ -27,4 +12,4 @@ export interface TokenPayload {
   userId: string
 }
 
-export type AuthenticatedUser = TokenPayload & Partial<UserProps>
+export type AuthenticatedUser = TokenPayload & Partial<UserSchemaProps>
