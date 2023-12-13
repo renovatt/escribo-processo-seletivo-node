@@ -139,6 +139,7 @@ Senha incorreta: status 401 com:
 - [MongoDB](https://www.mongodb.com)
 - [Mongoose](https://mongoosejs.com/docs/guide.html)
 - [jsonwebtoken](https://jwt.io/)
+- [cors](https://www.npmjs.com/package/cors)
 - [zod](https://zod.dev/)
 - [dotenv](https://www.npmjs.com/package/dotenv)
 
