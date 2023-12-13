@@ -1,4 +1,5 @@
 import dotenv from 'dotenv'
+import cors from 'cors'
 import express from 'express'
 import mongoose from 'mongoose'
 import { router } from './routes'
@@ -11,6 +12,7 @@ const DATABASE_URL = process.env.DATABASE_URL ?? ''
 
 const app = express()
 
+app.use(cors())
 app.use(express.json())
 app.use(router)
 app.use(errorMiddleware)
